@@ -1,0 +1,58 @@
+# FastAPI and server dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+aiofiles
+
+# Core ML libraries (install without TTS to avoid conflicts)
+torch
+torchaudio
+torchvision
+numpy
+
+# ASR (Automatic Speech Recognition)
+openai-whisper
+
+# Translation
+transformers
+sentencepiece
+sacremoses
+
+# TTS (Text-to-Speech) - for voice translation  
+# Using gTTS as a simpler alternative to avoid complex dependencies
+gTTS
+pydub
+
+# Audio/Video processing
+ffmpeg-python
+pydub
+librosa
+soundfile
+
+# Image processing (for Wav2Lip)
+opencv-python
+Pillow
+scipy
+
+# Utilities
+python-dotenv
+pydantic
+pydantic-settings
+
+# Job management and storage
+aiosqlite
+ujson
+
+# Monitoring and logging
+loguru
+
+# Progress tracking
+tqdm
+
+# System monitoring
+psutil
+
+# Development dependencies (optional)
+pytest
+pytest-asyncio
+httpx

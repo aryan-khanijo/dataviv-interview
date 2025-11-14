@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rtvt-lipsync-deployment
+  labels:
+    app: rtvt-lipsync
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: rtvt-lipsync
+  template:
+    metadata:
+      labels:
+        app: rtvt-lipsync
+    spec:
+      containers:
+      - name: rtvt-lipsync-app
+        image: rtvt-lipsync:latest
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        
+        env:
+        - name: STORAGE_PATH
+          value: "/app/storage"
+        - name: MAX_UPLOAD_SIZE
+          value: "104857600"
+        
+        - name: MODELS_PATH
+          value: "/app/models"
+        - name: WHISPER_MODEL
+          value: "base"
+        - name: DEVICE
+          value: "cpu" 
+        
+        - name: MAX_WORKERS
+          value: "2"
+        - name: JOB_TIMEOUT
+          value: "3600"
+        
+        # Server Configuration
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "8000"
+        - name: LOG_LEVEL
+          value: "INFO"
+        
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2000m"
+          limits:
+            memory: "8Gi"
+            cpu: "4000m"
+            # Uncomment for GPU support
+            # nvidia.com/gpu: 1
+        
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /app/storage
+        - name: models-volume
+          mountPath: /app/models
+          readOnly: true
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      
+      volumes:
+      - name: storage-volume
+        persistentVolumeClaim:
+          claimName: rtvt-lipsync-storage
+      - name: models-volume
+        hostPath:
+          path: /path/to/local/models
+          type: Directory
+
+---
+

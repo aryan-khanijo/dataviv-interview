@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: rtvt-lipsync-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app/models:/app/app/models:ro
+      - ./storage:/app/storage
+      - ./app:/app/app
+    environment:
+      - STORAGE_PATH=/app/storage
+      - MODELS_PATH=/app/app/models
+      - WHISPER_MODEL=base
+      - DEVICE=cpu
+      - MAX_WORKERS=2
+      - LOG_LEVEL=INFO
+      - HOST=0.0.0.0
+      - PORT=8000
+    restart: unless-stopped
+    # Uncomment for GPU support (requires nvidia-docker)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  default:
+    name: rtvt-lipsync-network
